@@ -1,0 +1,116 @@
+services:
+  backend-db:
+    image: postgres:16
+    container_name: backend-db
+    restart: always
+    environment:
+      POSTGRES_DB: backenddb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5433:5432"
+    volumes:
+      - backend-db-data:/var/lib/postgresql/data
+    networks:
+      - backend-network
+
+  api-db:
+    image: postgres:16
+    container_name: api-db
+    restart: always
+    environment:
+      POSTGRES_DB: apidb
+      POSTGRES_USER: apiuser
+      POSTGRES_PASSWORD: apipass
+    ports:
+      - "5434:5432"
+    volumes:
+      - api-db-data:/var/lib/postgresql/data
+    networks:
+      - backend-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672" 
+    networks:
+      - backend-network
+
+  backend:
+    build: ./backend
+    container_name: backend
+    depends_on:
+      rabbitmq:
+        condition: service_started
+      backend-db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_HOST: backend-db
+      DB_PORT: 5432
+      DB_NAME: backenddb
+      DB_USER: admin
+      DB_PASS: admin
+      RABBIT_HOST: rabbitmq
+      RABBIT_PORT: 5672
+      RABBIT_USER: guest
+      RABBIT_PASS: guest
+    ports:
+      - "8080:8080"
+    networks:
+      - backend-network
+
+  api:
+    build: ./api
+    container_name: api
+    depends_on:
+      rabbitmq:
+        condition: service_started
+      api-db:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_HOST: api-db
+      DB_PORT: 5432
+      DB_NAME: apidb
+      DB_USER: apiuser
+      DB_PASS: apipass
+      RABBIT_HOST: rabbitmq
+      RABBIT_PORT: 5672
+      RABBIT_USER: guest
+      RABBIT_PASS: guest
+      BACKEND_URL: http://backend:8080
+    ports:
+      - "8081:8081"
+    networks:
+      - backend-network
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_BACKEND_URL: http://backend:8080
+    container_name: frontend
+    depends_on:
+      backend:
+        condition: service_started
+    ports:
+      - "3000:80"
+    networks:
+      - backend-network
+
+volumes:
+  backend-db-data:
+  api-db-data:
+
+networks:
+  backend-network:
+    driver: bridge
