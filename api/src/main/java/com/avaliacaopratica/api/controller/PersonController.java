@@ -1,13 +1,10 @@
 package com.avaliacaopratica.api.controller;
 
-import com.avaliacaopratica.api.dto.PersonRequestDTO;
-import com.avaliacaopratica.api.dto.PersonResponseDTO;
+import com.avaliacaopratica.api.dto.person.PersonRequestDTO;
+import com.avaliacaopratica.api.dto.person.PersonResponseDTO;
 import com.avaliacaopratica.api.services.PersonService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/person")
+@RequestMapping("/v1/person")
 @RequiredArgsConstructor
 public class PersonController {
 
@@ -43,15 +40,6 @@ public class PersonController {
         return ResponseEntity.ok(personService.findAll());
     }
 
-    @GetMapping("/paged")
-    public ResponseEntity<Page<PersonResponseDTO>> findAllPaged(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(personService.findAllPaginated(pageable));
-    }
-
     @GetMapping("/cpf/{cpf}")
     public ResponseEntity<PersonResponseDTO> findByCpf(@PathVariable String cpf) {
         return ResponseEntity.ok(personService.findByCpf(cpf));
@@ -60,6 +48,12 @@ public class PersonController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         personService.deletePerson(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/cpf/{cpf}")
+    public ResponseEntity<Void> deleteByCpf(@PathVariable String cpf) {
+        personService.deleteByCpf(cpf);
         return ResponseEntity.noContent().build();
     }
 

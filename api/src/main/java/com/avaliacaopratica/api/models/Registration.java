@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "registration")
+@Table
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,21 +14,20 @@ public class Registration {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_registration")
     private Integer idRegistration;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_course", nullable = false)
     private Course course;
 
-    @Column(name = "cpf", nullable = false, length = 11)
+    @Column(nullable = false, length = 11)
     private String cpf;
 
-    @Column(name = "nota", nullable = false)
-    private Double nota;
+    @Column(nullable = false)
+    private Double score;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "situacao_inscricao", nullable = false, length = 20)
-    private RegistrationStatus situacaoInscricao = RegistrationStatus.NAO_SELECIONADO;
+    @Column(nullable = false, length = 20)
+    private RegistrationStatus registrationStatus = RegistrationStatus.NAO_SELECIONADO;
 
 }

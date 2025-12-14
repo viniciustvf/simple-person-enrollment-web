@@ -1,21 +1,35 @@
-import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
-import { InscricaoDTO } from "../../models/InscricaoDTO";
+import { Box, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { InscricaoDTO } from "../../models/registration/InscricaoDTO";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 interface Props {
   selecionados: InscricaoDTO[];
+  onRefresh: () => void;
 }
 
-export default function SelectedList({ selecionados }: Props) {
+export default function SelectedList({ selecionados, onRefresh }: Props) {
   return (
     <Box mt={4}>
       <Paper sx={{ p: 2 }}>
-      <Typography
+        <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            mb={2}
+        >
+        <Typography
             variant="h5"
             color="#015caa"
-            fontWeight="bold">
+            fontWeight="bold"
+        >
             Selecionados
-      </Typography>
-        <TableContainer>
+        </Typography>
+
+        <IconButton onClick={onRefresh} color="primary">
+            <RefreshIcon />
+        </IconButton>
+        </Box>
+        <TableContainer sx={{ maxHeight: 300 }}>
           <Table>
             <TableHead>
               <TableRow>

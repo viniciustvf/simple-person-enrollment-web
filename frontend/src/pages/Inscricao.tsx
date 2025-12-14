@@ -2,18 +2,22 @@ import { useEffect, useState } from "react";
 import { Typography } from "@mui/material";
 import InscricaoForm from "../components/inscricao/InscricaoForm";
 import SelectedList from "../components/inscricao/SelectedList";
-import { InscricaoDTO } from "../models/InscricaoDTO";
-import { CourseDTO } from "../models/CourseDTO";
+import { InscricaoDTO } from "../models/registration/InscricaoDTO";
+import { CourseDTO } from "../models/couse/CourseDTO";
 import { findAllCourses } from "../services/api/api.course.service";
 import { findAllPersonsApi } from "../services/api/api.person.service";
+import { Backdrop, CircularProgress } from "@mui/material";
 import {
   finalizarInscricoes,
   findInscritosByCurso,
   findInscritosFinalizadosByCurso,
 } from "../services/api/api.registration.service";
-import { PersonApiDTO } from "../models/PersonApiDTO";
+import { PersonApiDTO } from "../models/person/PersonApiDTO";
+import { useToast } from "../hooks/useToast";
 
 export default function Inscricao() {
+  const { toastInfo, toastError } = useToast();
+  const [loadingFinalizar, setLoadingFinalizar] = useState(false);
   const [inscricoes, setInscricoes] = useState<InscricaoDTO[]>([]);
   const [selecionados, setSelecionados] = useState<InscricaoDTO[]>([]);
   const [cursoSelecionado, setCursoSelecionado] = useState<number | null>(null);
@@ -22,7 +26,7 @@ export default function Inscricao() {
 
   useEffect(() => {
     carregarDados();
-  }, []);
+  }, [cursoSelecionado]);
 
   async function carregarDados() {
     try {
@@ -84,20 +88,44 @@ export default function Inscricao() {
 
   async function handleFinalizar() {
     if (!cursoSelecionado) {
-      alert("Selecione um curso antes de finalizar as inscrições.");
+      toastError("Selecione um curso antes de finalizar as inscrições.");
       return;
     }
-
+  
+    const idCurso = cursoSelecionado;
+  
     try {
-      const message = await finalizarInscricoes(cursoSelecionado);
-      alert(message);
-      // após finalizar, recarrega os selecionados do curso atual
-      await carregarSelecionados(cursoSelecionado);
+      setLoadingFinalizar(true);
+  
+      const message = await finalizarInscricoes(idCurso);
+      toastInfo(message);
+  
+      const [pessoasApi, cursosApi] = await Promise.all([
+        findAllPersonsApi(),
+        findAllCourses(),
+      ]);
+  
+      setPessoas(pessoasApi);
+      setCursos(cursosApi);
+  
+      await handleCursoSelecionado(idCurso);
+  
     } catch (error) {
       console.error("Erro ao finalizar inscrições:", error);
-      alert("Erro ao finalizar inscrições.");
+      toastError("Erro ao finalizar inscrições.");
+    } finally {
+      setLoadingFinalizar(false);
     }
-  }
+  }  
+
+  async function handleRefreshSelecionados() {
+    if (!cursoSelecionado) {
+      toastError("Selecione um curso para atualizar os selecionados.");
+      return;
+    }
+  
+    await carregarSelecionados(cursoSelecionado);
+  }  
 
   return (
     <div>
@@ -118,10 +146,17 @@ export default function Inscricao() {
         inscricoes={inscricoes}
         setInscricoes={setInscricoes}
         onCursoSelecionado={handleCursoSelecionado}
-        onFinalizar={handleFinalizar}
-      />
+        onFinalizar={handleFinalizar} 
+        cursoSelecionado={cursoSelecionado}
+        />
 
-      <SelectedList selecionados={selecionados} />
+      <SelectedList selecionados={selecionados} onRefresh={handleRefreshSelecionados} />
+      <Backdrop
+            open={loadingFinalizar}
+            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        >
+        <CircularProgress color="inherit" />
+        </Backdrop>
     </div>
   );
 }

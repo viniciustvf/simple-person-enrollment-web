@@ -1,5 +1,5 @@
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
-import { InscricaoDTO } from "../../models/InscricaoDTO";
+import { InscricaoDTO } from "../../models/registration/InscricaoDTO";
 
 interface Props {
   inscricoes: InscricaoDTO[];
@@ -9,7 +9,7 @@ export default function InscricaoList({ inscricoes }: Props) {
   return (
     <Box mt={4}>
       <Paper sx={{ p: 2 }}>
-        <TableContainer>
+        <TableContainer sx={{ maxHeight: 300 }}>
           <Table>
             <TableHead>
               <TableRow>

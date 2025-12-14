@@ -1,8 +1,9 @@
 package com.avaliacaopratica.backend.mapper;
 
-import com.avaliacaopratica.backend.dto.IntegratePersonRequestDTO;
-import com.avaliacaopratica.backend.dto.PersonRequestDTO;
-import com.avaliacaopratica.backend.dto.PersonResponseDTO;
+import com.avaliacaopratica.backend.dto.person.IntegratePersonRequestDTO;
+import com.avaliacaopratica.backend.dto.person.PersonRequestDTO;
+import com.avaliacaopratica.backend.dto.person.PersonResponseDTO;
+import com.avaliacaopratica.backend.enums.IntegrationAction;
 import com.avaliacaopratica.backend.models.Person;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,6 +18,8 @@ public interface PersonMapper {
     @Mapping(target = "mensagem", constant = "Operação realizada com sucesso")
     PersonResponseDTO toResponse(Person person);
 
-    IntegratePersonRequestDTO toIntegrate(Person person);
+    @Mapping(target = "action", source = "action")
+    @Mapping(target = "name", expression = "java(person.getName())")
+    IntegratePersonRequestDTO toIntegrate(Person person, IntegrationAction action);
 
 }

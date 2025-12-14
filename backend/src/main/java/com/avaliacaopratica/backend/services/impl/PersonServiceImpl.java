@@ -1,8 +1,8 @@
 package com.avaliacaopratica.backend.services.impl;
 
 import com.avaliacaopratica.backend.business.PersonBusiness;
-import com.avaliacaopratica.backend.dto.PersonRequestDTO;
-import com.avaliacaopratica.backend.dto.PersonResponseDTO;
+import com.avaliacaopratica.backend.dto.person.PersonRequestDTO;
+import com.avaliacaopratica.backend.dto.person.PersonResponseDTO;
 import com.avaliacaopratica.backend.services.PersonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -55,7 +55,7 @@ class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public PersonResponseDTO reintegrate(Integer id) {
-        return personBusiness.reintegrate(id);
+    public PersonResponseDTO integrate(Integer id) {
+        return personBusiness.integrate(id);
     }
 }

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Box, Grid, Paper, TextField } from "@mui/material";
 import InputMask from "react-input-mask";
 import { fetchAddressByCep } from "../../services/external/viacep.service";
-import { AddressDTO } from "../../models/AddressDTO";
+import { AddressDTO } from "../../models/address/AddressDTO";
 
 interface Props {
   endereco: AddressDTO;
@@ -19,13 +19,11 @@ export default function EnderecoForm({ endereco, onChange }: Props) {
 
       onChange({
         ...endereco,
-        rua: data.logradouro || endereco.rua,
-        cidade: data.localidade || endereco.cidade,
-        uf: data.uf || endereco.uf,
+        rua: data!.logradouro || endereco.rua,
+        cidade: data!.localidade || endereco.cidade,
+        uf: data!.uf || endereco.uf,
       });
-    } catch {
-      // CEP não encontrado → usuário pode digitar manualmente
-    }
+    } catch { /* empty */ }
   }
 
   useEffect(() => {
@@ -38,7 +36,6 @@ export default function EnderecoForm({ endereco, onChange }: Props) {
     <Box mt={3} width="100%">
       <Paper sx={{ p: 2 }} elevation={2}>
         <Grid container spacing={2} alignItems="center">
-          {/* CEP */}
           <Grid item xs={12} sm={3}>
             <InputMask
               mask="99999-999"
@@ -55,7 +52,6 @@ export default function EnderecoForm({ endereco, onChange }: Props) {
             </InputMask>
           </Grid>
 
-          {/* Logradouro */}
           <Grid item xs={12} sm={8}>
             <TextField
               fullWidth
@@ -68,7 +64,6 @@ export default function EnderecoForm({ endereco, onChange }: Props) {
             />
           </Grid>
 
-          {/* Número */}
           <Grid item xs={12} sm={2}>
             <TextField
               fullWidth
@@ -84,33 +79,46 @@ export default function EnderecoForm({ endereco, onChange }: Props) {
             />
           </Grid>
 
-          {/* Cidade */}
           <Grid item xs={12} sm={4}>
-            <TextField
-              fullWidth
-              label="Cidade"
-              value={endereco.cidade}
-              onChange={(e) =>
-                onChange({ ...endereco, cidade: e.target.value })
-              }
-              size="small"
-            />
+          <TextField
+            fullWidth
+            label="Cidade"
+            value={endereco.cidade}
+            onChange={(e) =>
+              onChange({
+                ...endereco,
+                cidade: e.target.value.replace(/[^A-Za-zÀ-ÿ\s]/g, ""),
+              })
+            }
+            inputProps={{
+              inputMode: "text",
+              pattern: "[A-Za-zÀ-ÿ\\s]*",
+            }}
+            size="small"
+          />
           </Grid>
 
-          {/* UF */}
-          <Grid item xs={12} sm={2}>
-            <TextField
-              fullWidth
-              label="UF"
-              value={endereco.uf}
-              onChange={(e) =>
-                onChange({
-                  ...endereco,
-                  uf: e.target.value.toUpperCase().slice(0, 2),
-                })
-              }
-              size="small"
-            />
+          <Grid item xs={12} sm={1}>
+          <TextField
+            fullWidth
+            label="UF"
+            value={endereco.uf}
+            onChange={(e) =>
+              onChange({
+                ...endereco,
+                uf: e.target.value
+                  .replace(/[^A-Za-z]/g, "")
+                  .toUpperCase()
+                  .slice(0, 2),
+              })
+            }
+            inputProps={{
+              maxLength: 2,
+              inputMode: "text",
+              pattern: "[A-Za-z]{2}",
+            }}
+            size="small"
+          />
           </Grid>
         </Grid>
       </Paper>

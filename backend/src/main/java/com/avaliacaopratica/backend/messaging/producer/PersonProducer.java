@@ -1,7 +1,7 @@
 package com.avaliacaopratica.backend.messaging.producer;
 
 import com.avaliacaopratica.backend.config.RabbitMQConfig;
-import com.avaliacaopratica.backend.dto.IntegratePersonRequestDTO;
+import com.avaliacaopratica.backend.dto.person.IntegratePersonRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;

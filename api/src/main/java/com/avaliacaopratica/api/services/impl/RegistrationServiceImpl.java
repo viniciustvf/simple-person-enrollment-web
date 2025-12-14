@@ -1,9 +1,9 @@
 package com.avaliacaopratica.api.services.impl;
 
 import com.avaliacaopratica.api.business.RegistrationBusiness;
-import com.avaliacaopratica.api.dto.InscritoResponseDTO;
-import com.avaliacaopratica.api.dto.RegistrationRequestDTO;
-import com.avaliacaopratica.api.dto.RegistrationResponseDTO;
+import com.avaliacaopratica.api.dto.registration.RegisteredResponseDTO;
+import com.avaliacaopratica.api.dto.registration.RegistrationRequestDTO;
+import com.avaliacaopratica.api.dto.registration.RegistrationResponseDTO;
 import com.avaliacaopratica.api.services.RegistrationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,17 +17,17 @@ public class RegistrationServiceImpl implements RegistrationService {
     private final RegistrationBusiness registrationBusiness;
 
     @Override
-    public RegistrationResponseDTO createRegistration(RegistrationRequestDTO request) {
-        return registrationBusiness.create(request);
+    public void createRegistration(RegistrationRequestDTO request) {
+        registrationBusiness.create(request);
     }
 
     @Override
-    public List<InscritoResponseDTO> findInscritosByCurso(Integer idCurso) {
+    public List<RegisteredResponseDTO> findInscritosByCurso(Integer idCurso) {
         return registrationBusiness.findInscritosByCurso(idCurso);
     }
 
     @Override
-    public List<InscritoResponseDTO> findInscritosFinalizadosByCurso(Integer idCurso) {
+    public List<RegisteredResponseDTO> findInscritosFinalizadosByCurso(Integer idCurso) {
         return registrationBusiness.findInscritosFinalizadosByCurso(idCurso);
     }
 

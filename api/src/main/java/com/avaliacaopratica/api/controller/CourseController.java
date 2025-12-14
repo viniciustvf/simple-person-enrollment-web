@@ -1,13 +1,11 @@
 package com.avaliacaopratica.api.controller;
 
-import com.avaliacaopratica.api.dto.CourseRequestDTO;
-import com.avaliacaopratica.api.dto.CourseResponseDTO;
+import com.avaliacaopratica.api.dto.course.CoursePostResponseDTO;
+import com.avaliacaopratica.api.dto.course.CourseRequestDTO;
+import com.avaliacaopratica.api.dto.course.CourseResponseDTO;
 import com.avaliacaopratica.api.services.CourseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,14 +13,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/courses")
+@RequestMapping("/v1/courses")
 @RequiredArgsConstructor
 public class CourseController {
 
     private final CourseService courseService;
 
     @PostMapping("/curso")
-    public ResponseEntity<CourseResponseDTO> create(
+    public ResponseEntity<CoursePostResponseDTO> create(
             @Valid @RequestBody CourseRequestDTO request
     ) {
         return ResponseEntity
@@ -62,15 +60,6 @@ public class CourseController {
     @GetMapping("/curso")
     public ResponseEntity<List<CourseResponseDTO>> findAll() {
         return ResponseEntity.ok(courseService.findAll());
-    }
-
-    @GetMapping("/paged")
-    public ResponseEntity<Page<CourseResponseDTO>> findAllPaged(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(courseService.findAllPaginated(pageable));
     }
 
     @DeleteMapping("/{id}")

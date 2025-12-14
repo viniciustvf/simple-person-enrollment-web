@@ -1,17 +1,16 @@
 import {
   RegistrationRequestDTO,
-  RegistrationResponseDTO,
-} from "../../models/RegistrationDTO";
-import { InscricaoDTO } from "../../models/InscricaoDTO";
-import { InscritoResponseDTO } from "../../models/InscritoResponseDTO";
+} from "../../models/registration/RegistrationDTO";
+import { InscricaoDTO } from "../../models/registration/InscricaoDTO";
+import { InscritoResponseDTO } from "../../models/registration/InscritoResponseDTO";
 import { api } from "../../api/api";
 
-const BASE_PATH = "/registrations";
+const BASE_PATH = "/v1/registrations";
 
 export async function createRegistration(
   payload: RegistrationRequestDTO
-): Promise<RegistrationResponseDTO> {
-  const { data } = await api.post<RegistrationResponseDTO>(
+): Promise<string> {
+  const { data } = await api.post<string>(
     `${BASE_PATH}/inscricao`,
     payload
   );

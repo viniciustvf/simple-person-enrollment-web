@@ -6,8 +6,8 @@ import EnderecoForm from "../endereco/EnderecoForm";
 import { useToast } from "../../hooks/useToast";
 import { formatNameLive, isValidCPF, isValidEmail } from "../../util/validators";
 import InputMask from "react-input-mask";
-import { PersonDTO } from "../../models/PersonDTO";
-import { AddressDTO } from "../../models/AddressDTO";
+import { PersonDTO } from "../../models/person/PersonDTO";
+import { AddressDTO } from "../../models/address/AddressDTO";
 import { existsByCpf } from "../../services/backend/person.service";
 
 interface Props {
@@ -17,7 +17,7 @@ interface Props {
 }
 
 export default function PessoaForm({ onAddPessoa, pessoaEditando, onCancelEdit }: Props) {
-  const { toastError, toastSuccess } = useToast();
+  const { toastError } = useToast();
 
   const [nome, setNome] = useState("");
   const [dataNascimento, setDataNascimento] = useState<Dayjs | null>(null);
@@ -112,7 +112,6 @@ export default function PessoaForm({ onAddPessoa, pessoaEditando, onCancelEdit }
     };
   
     onAddPessoa(novaPessoa);
-    toastSuccess(pessoaEditando ? "Pessoa atualizada com sucesso!" : "Pessoa salva com sucesso!");
     limparFormulario();
   }  
 
@@ -148,6 +147,7 @@ export default function PessoaForm({ onAddPessoa, pessoaEditando, onCancelEdit }
               label="Data de nascimento"
               value={dataNascimento}
               onChange={setDataNascimento}
+              maxDate={dayjs()}
               sx={{ width: "100%" }}
               slotProps={{ textField: { fullWidth: true, size: "small" } }}
             />
@@ -158,7 +158,6 @@ export default function PessoaForm({ onAddPessoa, pessoaEditando, onCancelEdit }
               mask="999.999.999-99"
               value={cpf}
               onChange={(e) => setCpf(e.target.value)}
-              disabled={!!pessoaEditando}
             >
               {(inputProps) => (
                 <TextField {...inputProps} fullWidth label="CPF" size="small" required />
@@ -182,7 +181,7 @@ export default function PessoaForm({ onAddPessoa, pessoaEditando, onCancelEdit }
             <Button
               variant="contained"
               onClick={salvarPessoa}
-              sx={{ backgroundColor: "#015caa", textTransform: "none", mr: 2 }}
+              sx={{ backgroundColor: "#015caa", mr: 2 }}
             >
               {pessoaEditando ? "Salvar Alterações" : "Salvar Pessoa"}
             </Button>
@@ -191,7 +190,6 @@ export default function PessoaForm({ onAddPessoa, pessoaEditando, onCancelEdit }
               <Button
                 variant="outlined"
                 onClick={limparFormulario}
-                sx={{ textTransform: "none" }}
               >
                 Cancelar
               </Button>

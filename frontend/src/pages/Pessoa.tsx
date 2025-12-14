@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
 import PessoaForm from "../components/pessoa/PessoaForm";
 import PessoaList from "../components/pessoa/PessoaList";
-import { PersonDTO } from "../models/PersonDTO";
-import { Typography } from "@mui/material";
+import { PersonDTO } from "../models/person/PersonDTO";
+import {
+  Typography,
+  Backdrop,
+  CircularProgress,
+} from "@mui/material";
 import {
   createPerson,
   deletePerson,
-  findAllPersons,
-  reintegratePerson,
+  findAllPersonsPaged,
+  integratePerson,
   updatePerson,
 } from "../services/backend/person.service";
 import { useToast } from "../hooks/useToast";
@@ -17,28 +21,49 @@ export default function Pessoa() {
 
   const [pessoas, setPessoas] = useState<PersonDTO[]>([]);
   const [pessoaEditando, setPessoaEditando] = useState<PersonDTO | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     loadPersons();
-  }, []);
+  }, [page, rowsPerPage]);
 
   async function loadPersons() {
-    const data = await findAllPersons();
-    console.log(data);
-    setPessoas(data);
+    try {
+      setLoading(true);
+      const response = await findAllPersonsPaged(page, rowsPerPage);
+      setPessoas(response.content);
+      setTotal(response.totalElements);
+    } catch (error) {
+      toastError("Erro ao carregar pessoas.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleAddPessoa(pessoa: PersonDTO) {
-    console.log(pessoa);
-    if (pessoa.idPerson) {
-      const updated = await updatePerson(pessoa.idPerson, pessoa);
-      setPessoas((prev) =>
-        prev.map((p) => (p.idPerson === updated.idPerson ? updated : p))
-      );
+    try {
+      setLoading(true);
+
+      if (pessoa.idPerson) {
+        await updatePerson(pessoa.idPerson, pessoa);
+        toastSuccess("Pessoa atualizada com sucesso!");
+      } else {
+        await createPerson(pessoa);
+        toastSuccess("Pessoa cadastrada com sucesso!");
+      }
+
       setPessoaEditando(null);
-    } else {
-      const created = await createPerson(pessoa);
-      setPessoas((prev) => [...prev, created]);
+
+      await loadPersons();
+    } catch (error) {
+      toastError("Erro ao salvar pessoa.");
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -48,30 +73,42 @@ export default function Pessoa() {
 
   async function handleDeletePessoa(index: number) {
     const pessoa = pessoas[index];
-    if (!pessoa.idPerson) return;
+    if (!pessoa?.idPerson) return;
 
-    await deletePerson(pessoa.idPerson);
-    setPessoas((prev) => prev.filter((_, i) => i !== index));
+    try {
+      setLoading(true);
+      await deletePerson(pessoa.idPerson);
+      toastSuccess("Pessoa excluída com sucesso!");
+
+      if (pessoas.length === 1 && page > 0) {
+        setPage((prev) => prev - 1);
+      } else {
+        await loadPersons();
+      }
+    } catch (error) {
+      toastError("Erro ao excluir pessoa.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
-  async function handleReintegratePessoa(pessoa: PersonDTO) {
+  async function handleIntegratePessoa(pessoa: PersonDTO) {
     if (!pessoa.idPerson) return;
-  
+
     try {
-      const updated = await reintegratePerson(pessoa.idPerson);
-  
-      setPessoas((prev) =>
-        prev.map((p) =>
-          p.idPerson === updated.idPerson ? updated : p
-        )
-      );
-      loadPersons();
-      toastSuccess("Pessoa reenviada para integração!");
+      setLoading(true);
+      await integratePerson(pessoa.idPerson);
+      toastSuccess("Pessoa enviada para integração!");
+
+      await loadPersons();
     } catch (error) {
-      toastError("Erro ao reenviar pessoa para integração.");
+      toastError("Erro ao enviar pessoa para integração.");
       console.error(error);
+    } finally {
+      setLoading(false);
     }
-  }  
+  }
 
   return (
     <div>
@@ -86,8 +123,33 @@ export default function Pessoa() {
         Cadastro de Pessoa
       </Typography>
 
-      <PessoaForm pessoaEditando={pessoaEditando} onCancelEdit={() => setPessoaEditando(null)} onAddPessoa={handleAddPessoa} />
-      <PessoaList onEdit={(pessoa) => handleEditPessoa(pessoa)} pessoas={pessoas} onDelete={handleDeletePessoa} onReintegrate={handleReintegratePessoa}/>
+      <PessoaForm
+        pessoaEditando={pessoaEditando}
+        onCancelEdit={() => setPessoaEditando(null)}
+        onAddPessoa={handleAddPessoa}
+      />
+
+      <PessoaList
+        pessoas={pessoas}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        total={total}
+        onPageChange={setPage}
+        onRowsPerPageChange={(value) => {
+          setRowsPerPage(value);
+          setPage(0);
+        }}
+        onEdit={handleEditPessoa}
+        onDelete={handleDeletePessoa}
+        onIntegrate={handleIntegratePessoa}
+      />
+
+      <Backdrop
+        open={loading}
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 }

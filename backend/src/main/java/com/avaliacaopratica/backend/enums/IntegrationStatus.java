@@ -1,5 +1,10 @@
 package com.avaliacaopratica.backend.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public enum IntegrationStatus {
 
     SUCESSO("Sucesso"),
@@ -8,10 +13,6 @@ public enum IntegrationStatus {
     PENDENTE("Pendente");
 
     final String string;
-
-    IntegrationStatus(String str) {
-        this.string = str;
-    }
 
     @Override
     public String toString() {

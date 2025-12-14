@@ -1,7 +1,7 @@
 import { api } from "../../api/api";
-import { PersonApiDTO } from "../../models/PersonApiDTO";
+import { PersonApiDTO } from "../../models/person/PersonApiDTO";
 
-const BASE_PATH = "/person";
+const BASE_PATH = "/v1/person";
 
 export async function findAllPersonsApi(): Promise<PersonApiDTO[]> {
   const { data } = await api.get<PersonApiDTO[]>(BASE_PATH);

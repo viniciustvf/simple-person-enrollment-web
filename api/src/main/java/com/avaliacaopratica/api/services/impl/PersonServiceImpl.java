@@ -1,8 +1,8 @@
 package com.avaliacaopratica.api.services.impl;
 
 import com.avaliacaopratica.api.business.PersonBusiness;
-import com.avaliacaopratica.api.dto.PersonRequestDTO;
-import com.avaliacaopratica.api.dto.PersonResponseDTO;
+import com.avaliacaopratica.api.dto.person.PersonRequestDTO;
+import com.avaliacaopratica.api.dto.person.PersonResponseDTO;
 import com.avaliacaopratica.api.services.PersonService;
 
 import lombok.RequiredArgsConstructor;
@@ -44,12 +44,12 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public Page<PersonResponseDTO> findAllPaginated(Pageable pageable) {
-        return personBusiness.findAllPaged(pageable);
+    public boolean existsByCpf(String cpf) {
+        return personBusiness.existsByCpf(cpf);
     }
 
     @Override
-    public boolean existsByCpf(String cpf) {
-        return personBusiness.existsByCpf(cpf);
+    public void deleteByCpf(String cpf) {
+        personBusiness.deleteByCpf(cpf);
     }
 }

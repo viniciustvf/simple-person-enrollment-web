@@ -1,7 +1,8 @@
 import { backend } from "../../api/backend";
-import { PersonDTO } from "../../models/PersonDTO";
+import { PageResponse } from "../../models/PageResponse";
+import { PersonDTO } from "../../models/person/PersonDTO";
 
-const BASE_PATH = "/person";
+const BASE_PATH = "/v1/person";
 
 export async function findAllPersons(): Promise<PersonDTO[]> {
   const { data } = await backend.get<PersonDTO[]>(BASE_PATH);
@@ -22,8 +23,6 @@ export async function updatePerson(
   id: number,
   pessoa: PersonDTO
 ): Promise<PersonDTO> {
-  console.log(id, pessoa + " editando");
-
   const { data } = await backend.put<PersonDTO>(
     `${BASE_PATH}/${id}`,
     pessoa
@@ -44,11 +43,22 @@ export async function existsByCpf(cpf: string): Promise<boolean> {
   return data;
 }
 
-export async function reintegratePerson(
+export async function integratePerson(
   id: number
 ): Promise<PersonDTO> {
   const { data } = await backend.post<PersonDTO>(
-    `${BASE_PATH}/${id}/reintegrate`
+    `${BASE_PATH}/${id}/integrate`
+  );
+  return data;
+}
+
+export async function findAllPersonsPaged(
+  page: number,
+  size: number
+): Promise<PageResponse<PersonDTO>> {
+  const { data } = await backend.get<PageResponse<PersonDTO>>(
+    `${BASE_PATH}/paged`,
+    { params: { page, size } }
   );
   return data;
 }

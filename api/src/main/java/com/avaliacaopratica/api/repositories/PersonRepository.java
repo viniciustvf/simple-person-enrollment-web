@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PersonRepository extends JpaRepository<Person, Integer> {
-    Optional<Person> findByCpf(@Param("cpf") String cpf);
-    List<Person> findAll();
-    Page<Person> findAll(Pageable pageable);
+
+    Optional<Person> findByCpf(String cpf);
     boolean existsByCpf(String cpf);
+
 }

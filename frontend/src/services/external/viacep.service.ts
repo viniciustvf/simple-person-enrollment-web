@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ViaCepResponseModel } from "../../models/ViaCepResponseModel";
+import { ViaCepResponseModelDTO } from "../../models/ViaCepResponseModelDTO";
 
 const externalApi = axios.create({
   baseURL: "https://viacep.com.br/ws/",
@@ -7,7 +7,7 @@ const externalApi = axios.create({
 
 export async function fetchAddressByCep(
   cep: string
-): Promise<ViaCepResponseModel | null> {
+): Promise<ViaCepResponseModelDTO | null> {
   const cleanCep = cep.replace(/\D/g, "");
 
   if (cleanCep.length !== 8) {
@@ -15,7 +15,7 @@ export async function fetchAddressByCep(
   }
 
   try {
-    const { data } = await externalApi.get<ViaCepResponseModel>(
+    const { data } = await externalApi.get<ViaCepResponseModelDTO>(
       `${cleanCep}/json/`
     );
 

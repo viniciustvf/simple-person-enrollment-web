@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Paper,
@@ -14,19 +14,26 @@ import {
   DialogContent,
   DialogActions,
   Button,
+  TablePagination,
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SendIcon from "@mui/icons-material/Send";
 import dayjs from "dayjs";
-import { PersonDTO } from "../../models/PersonDTO";
+import { PersonDTO } from "../../models/person/PersonDTO";
+import { useToast } from "../../hooks/useToast";
 
 interface Props {
   pessoas: PersonDTO[];
   onEdit?: (pessoa: PersonDTO) => void;
   onDelete?: (index: number) => void;
-  onReintegrate?: (pessoa: PersonDTO) => void;
+  onIntegrate?: (pessoa: PersonDTO) => void;
+  page: number;
+  rowsPerPage: number;
+  total: number;
+  onPageChange: (page: number) => void;
+  onRowsPerPageChange: (rows: number) => void;
 }
 
 function maskCPF(cpf: string) {
@@ -34,11 +41,22 @@ function maskCPF(cpf: string) {
   return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
 }
 
-export default function PessoaList({ pessoas, onEdit, onDelete, onReintegrate }: Props) {
+export default function PessoaList({
+  pessoas,
+  onEdit,
+  onDelete,
+  onIntegrate,
+  page,
+  rowsPerPage,
+  total,
+  onPageChange,
+  onRowsPerPageChange,
+}: Props) {
   const theme = useTheme();
   const [openConfirm, setOpenConfirm] = useState(false);
   const [indexToDelete, setIndexToDelete] = useState<number | null>(null);
-  const [disabledReintegrateIds, setDisabledReintegrateIds] = useState<(number)[]>([]);
+  const [disabledIntegrateIds, setDisabledIntegrateIds] = useState<number[]>([]);
+  const { toastError } = useToast();
 
   function handleOpenDelete(index: number) {
     setIndexToDelete(index);
@@ -57,26 +75,21 @@ export default function PessoaList({ pessoas, onEdit, onDelete, onReintegrate }:
     handleCloseDelete();
   }
 
-  async function handleReintegrateClick(pessoa: PersonDTO) {
+  async function handleIntegrateClick(pessoa: PersonDTO) {
     if (!pessoa.idPerson) return;
-  
-    const id = pessoa.idPerson;
-  
-    setDisabledReintegrateIds((prev) => [...prev, id]);
-  
-    try {
-      await onReintegrate?.(pessoa);
-    } catch (error) {
-      console.error("Erro ao reintegrar:", error);
-  
-      setDisabledReintegrateIds((prev) => prev.filter((existingId) => existingId !== id));
-    }
-  }  
 
-  useEffect(() => {
-    console.log("disabledReintegrateIds mudou:", disabledReintegrateIds);
-  }, [disabledReintegrateIds]);
-  
+    const id = pessoa.idPerson;
+    setDisabledIntegrateIds((prev) => [...prev, id]);
+
+    try {
+      await onIntegrate?.(pessoa);
+    } catch {
+      toastError("Erro ao integrar pessoa");
+      setDisabledIntegrateIds((prev) =>
+        prev.filter((existingId) => existingId !== id)
+      );
+    }
+  }
 
   return (
     <Box
@@ -95,12 +108,12 @@ export default function PessoaList({ pessoas, onEdit, onDelete, onReintegrate }:
         sx={{
           width: "100%",
           borderRadius: 3,
-          overflow: "hidden",
           backgroundColor: alpha(theme.palette.background.paper, 0.6),
           backdropFilter: "blur(6px)",
+          maxHeight: 350,
         }}
       >
-        <Table>
+        <Table stickyHeader>
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: "bold" }}>Nome</TableCell>
@@ -133,37 +146,42 @@ export default function PessoaList({ pessoas, onEdit, onDelete, onReintegrate }:
                 }}
               >
                 <TableCell>{pessoa.name}</TableCell>
-
                 <TableCell>{maskCPF(pessoa.cpf)}</TableCell>
-
                 <TableCell>
                   {pessoa.birth
                     ? dayjs(pessoa.birth).format("DD/MM/YYYY")
                     : "-"}
                 </TableCell>
-
                 <TableCell>{pessoa.email || "-"}</TableCell>
-
                 <TableCell>
                   {pessoa.address?.cidade}/{pessoa.address?.uf}
                 </TableCell>
-
                 <TableCell align="center">
-                  <IconButton color="primary"onClick={() => onEdit?.(pessoa, index)}>
-                  <EditIcon />
+                  <IconButton
+                    color="primary"
+                    onClick={() => onEdit?.(pessoa, index)}
+                  >
+                    <EditIcon />
                   </IconButton>
 
-                  <IconButton color="error" onClick={() => handleOpenDelete(index)}>
-                  <DeleteIcon />
+                  <IconButton
+                    color="error"
+                    onClick={() => handleOpenDelete(index)}
+                  >
+                    <DeleteIcon />
                   </IconButton>
 
-                  <IconButton color="secondary" title="Reenviar para integração"   
-                            disabled={
-                              pessoa.integrationStatus === "Sucesso" ||
-                              (pessoa.idPerson !== undefined && disabledReintegrateIds.includes(pessoa.idPerson))
-                            }                   
-                            onClick={() => handleReintegrateClick(pessoa)}>
-                    <SendIcon/>
+                  <IconButton
+                    color="secondary"
+                    title="Enviar para integração"
+                    disabled={
+                      pessoa.integrationStatus === "Sucesso" ||
+                      (pessoa.idPerson !== undefined &&
+                        disabledIntegrateIds.includes(pessoa.idPerson))
+                    }
+                    onClick={() => handleIntegrateClick(pessoa)}
+                  >
+                    <SendIcon />
                   </IconButton>
                 </TableCell>
               </TableRow>
@@ -180,11 +198,22 @@ export default function PessoaList({ pessoas, onEdit, onDelete, onReintegrate }:
         </Table>
       </TableContainer>
 
+      <TablePagination
+        component="div"
+        count={total}
+        page={page}
+        onPageChange={(_, newPage) => onPageChange(newPage)}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={(e) =>
+          onRowsPerPageChange(parseInt(e.target.value, 10))
+        }
+        rowsPerPageOptions={[5, 10, 20]}
+        labelRowsPerPage="Linhas por página"
+      />
+
       <Dialog open={openConfirm} onClose={handleCloseDelete}>
         <DialogTitle>Confirmar exclusão</DialogTitle>
-        <DialogContent>
-          Deseja realmente remover esta pessoa?
-        </DialogContent>
+        <DialogContent>Deseja realmente remover esta pessoa?</DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDelete}>Cancelar</Button>
           <Button color="error" onClick={handleConfirmDelete}>

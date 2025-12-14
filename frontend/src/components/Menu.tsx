@@ -11,8 +11,8 @@ export default function Menu() {
               <img width="50px" src={LogoSD} alt="Logo SD" />
             </IconButton>
                 <Box sx={{ flexGrow: 1 }} />
-                <Button sx={{color: "black"}} component={Link} to="/inscricao">Inscrição</Button>
                 <Button sx={{color: "black"}} component={Link} to="/">Pessoa</Button>
+                <Button sx={{color: "black"}} component={Link} to="/inscricao">Inscrição</Button>
           </Toolbar>
         </AppBar>
       </Box>

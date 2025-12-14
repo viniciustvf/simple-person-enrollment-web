@@ -1,7 +1,7 @@
 package com.avaliacaopratica.backend.controller;
 
-import com.avaliacaopratica.backend.dto.PersonRequestDTO;
-import com.avaliacaopratica.backend.dto.PersonResponseDTO;
+import com.avaliacaopratica.backend.dto.person.PersonRequestDTO;
+import com.avaliacaopratica.backend.dto.person.PersonResponseDTO;
 import com.avaliacaopratica.backend.services.PersonService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/person")
+@RequestMapping("/v1/person")
 @RequiredArgsConstructor
 public class PersonController {
 
@@ -25,9 +25,7 @@ public class PersonController {
     public ResponseEntity<PersonResponseDTO> create(
             @Valid @RequestBody PersonRequestDTO request
     ) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(personService.createPerson(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(personService.createPerson(request));
     }
 
     @PutMapping("/{id}")
@@ -68,9 +66,8 @@ public class PersonController {
         return ResponseEntity.ok(personService.existsByCpf(cpf));
     }
 
-    @PostMapping("/{id}/reintegrate")
-    public ResponseEntity<PersonResponseDTO> reintegrate(@PathVariable Integer id) {
-        return ResponseEntity.ok(personService.reintegrate(id));
+    @PostMapping("/{id}/integrate")
+    public ResponseEntity<PersonResponseDTO> integrate(@PathVariable Integer id) {
+        return ResponseEntity.ok(personService.integrate(id));
     }
-
 }

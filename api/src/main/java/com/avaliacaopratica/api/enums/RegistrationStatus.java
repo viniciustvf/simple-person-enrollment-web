@@ -1,15 +1,16 @@
 package com.avaliacaopratica.api.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public enum RegistrationStatus {
 
     SELECIONADO("Selecionado"),
     NAO_SELECIONADO("Não selecionado");
 
     private final String descricao;
-
-    RegistrationStatus(String descricao) {
-        this.descricao = descricao;
-    }
 
     @Override
     public String toString() {

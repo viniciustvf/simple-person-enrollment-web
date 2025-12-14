@@ -1,12 +1,11 @@
 package com.avaliacaopratica.api.services.impl;
 
 import com.avaliacaopratica.api.business.CourseBusiness;
-import com.avaliacaopratica.api.dto.CourseRequestDTO;
-import com.avaliacaopratica.api.dto.CourseResponseDTO;
+import com.avaliacaopratica.api.dto.course.CoursePostResponseDTO;
+import com.avaliacaopratica.api.dto.course.CourseRequestDTO;
+import com.avaliacaopratica.api.dto.course.CourseResponseDTO;
 import com.avaliacaopratica.api.services.CourseService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,7 +17,7 @@ public class CourseServiceImpl implements CourseService {
     private final CourseBusiness courseBusiness;
 
     @Override
-    public CourseResponseDTO createCourse(CourseRequestDTO request) {
+    public CoursePostResponseDTO createCourse(CourseRequestDTO request) {
         return courseBusiness.create(request);
     }
 
@@ -35,11 +34,6 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<CourseResponseDTO> findAll() {
         return courseBusiness.findAll();
-    }
-
-    @Override
-    public Page<CourseResponseDTO> findAllPaginated(Pageable pageable) {
-        return courseBusiness.findAllPaginated(pageable);
     }
 
     @Override

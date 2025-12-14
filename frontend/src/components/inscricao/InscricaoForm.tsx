@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -8,20 +8,22 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
-import { CourseDTO } from "../../models/CourseDTO";
-import { PersonApiDTO } from "../../models/PersonApiDTO";
+import { CourseDTO } from "../../models/couse/CourseDTO";
+import { PersonApiDTO } from "../../models/person/PersonApiDTO";
 import { createRegistration } from "../../services/api/api.registration.service";
 import InscricaoList from "./InscricaoList";
-import { InscricaoDTO } from "../../models/InscricaoDTO";
+import { InscricaoDTO } from "../../models/registration/InscricaoDTO";
 import { NumericFormat } from "react-number-format";
+import { useToast } from "../../hooks/useToast";
 
 interface Props {
-  cursos: CourseDTO[];
-  pessoas: PersonApiDTO[];
-  inscricoes: InscricaoDTO[];
-  setInscricoes: React.Dispatch<React.SetStateAction<InscricaoDTO[]>>;
-  onCursoSelecionado: (idCurso: number) => void;
-  onFinalizar: () => void;
+    cursos: CourseDTO[];
+    pessoas: PersonApiDTO[];
+    inscricoes: InscricaoDTO[];
+    setInscricoes: React.Dispatch<React.SetStateAction<InscricaoDTO[]>>;
+    cursoSelecionado: number | null;
+    onCursoSelecionado: (idCurso: number) => void;
+    onFinalizar: () => void;
 }
 
 export default function InscricaoForm({
@@ -30,35 +32,54 @@ export default function InscricaoForm({
   inscricoes,
   onCursoSelecionado,
   onFinalizar,
+  cursoSelecionado
 }: Props) {
-  const [curso, setCurso] = useState<CourseDTO | null>(null);
+  const { toastError } = useToast();
   const [pessoa, setPessoa] = useState<PersonApiDTO | null>(null);
-  const cursoFinalizado = curso?.situacaoCurso === "FINALIZADA";
+  const curso = cursos.find(c => c.idCourse === cursoSelecionado) || null;
+  const cursoFinalizado = curso?.courseRegistrationStatus === "FINALIZADA";
   const [nota, setNota] = useState("");
 
   async function handleInscrever() {
-    if (!curso || !pessoa || !nota) return;
-
+    if (!validarInscricao()) return;
+  
     try {
       await createRegistration({
-        idCourse: curso.idCourse,
-        cpf: pessoa.cpf,
+        idCourse: cursoSelecionado!,
+        cpf: pessoa!.cpf,
         nota: Number(nota),
       });
-
-      onCursoSelecionado(curso.idCourse);
+  
+      onCursoSelecionado(cursoSelecionado!);
       setPessoa(null);
       setNota("");
     } catch (error) {
       console.error("Erro ao criar inscrição:", error);
     }
-  }
+  }   
 
-  useEffect(() => {
-    if (curso?.idCourse) {
-      onCursoSelecionado(curso.idCourse);
+  function validarInscricao(): boolean {
+    const errors: string[] = [];
+  
+    if (!curso) {
+      errors.push("Selecione um curso.");
     }
-  }, [curso]);  
+  
+    if (!pessoa) {
+      errors.push("Selecione uma pessoa.");
+    }
+  
+    if (!nota) {
+      errors.push("Informe a nota.");
+    }
+  
+    if (errors.length > 0) {
+      errors.forEach((msg) => toastError(msg));
+      return false;
+    }
+  
+    return true;
+  }  
 
   return (
     <Box mt={4}>
@@ -71,21 +92,27 @@ export default function InscricaoForm({
                   select
                   fullWidth
                   label="Curso"
-                  value={curso?.idCourse || ""}
+                  value={cursoSelecionado ?? ""}
                   onChange={(e) => {
-                    const selected =
-                      cursos.find(c => c.idCourse === Number(e.target.value)) || null;
-                  
-                    setCurso(selected);
+                    const value = e.target.value;
+
+                    if (value === "") {
+                      onCursoSelecionado(0);
+                      return;
+                    }
+                    onCursoSelecionado(Number(value));
                   }}  
                   size="small"
                 >
+                    <MenuItem value="">
+                        <p>Selecione</p>
+                    </MenuItem>
                     {cursos.map((c) => (
                     <MenuItem key={c.idCourse} value={c.idCourse}>
-                        {c.nome}
-                        {c.situacaoCurso === "FINALIZADA"
+                        {c.name}
+                        {c.courseRegistrationStatus === "FINALIZADA"
                         ? " (IF)"
-                        : ` (${c.numeroVagas} vagas)`}
+                        : ` (${c.numVacancies} vagas)`}
                     </MenuItem>
                     ))}
                 </TextField>
@@ -96,6 +123,7 @@ export default function InscricaoForm({
                   select
                   fullWidth
                   label="Pessoa"
+                  disabled={cursoFinalizado}
                   value={pessoa?.idPerson || ""}
                   onChange={(e) =>
                     setPessoa(
@@ -106,6 +134,9 @@ export default function InscricaoForm({
                   }
                   size="small"
                 >
+                    <MenuItem value="">
+                        <p>Selecione</p>
+                    </MenuItem>
                   {pessoas.map((p) => (
                     <MenuItem key={p.idPerson} value={p.idPerson}>
                       {p.name}
@@ -127,6 +158,7 @@ export default function InscricaoForm({
                     allowNegative={false}
                     allowLeadingZeros={false}
                     fixedDecimalScale={false}
+                    disabled={cursoFinalizado}
                     isAllowed={(values) => {
                     const { floatValue } = values;
 

@@ -1,19 +1,16 @@
 package com.avaliacaopratica.api.services;
 
-import com.avaliacaopratica.api.dto.InscritoResponseDTO;
-import com.avaliacaopratica.api.dto.RegistrationRequestDTO;
-import com.avaliacaopratica.api.dto.RegistrationResponseDTO;
+import com.avaliacaopratica.api.dto.registration.RegisteredResponseDTO;
+import com.avaliacaopratica.api.dto.registration.RegistrationRequestDTO;
+import com.avaliacaopratica.api.dto.registration.RegistrationResponseDTO;
 
 import java.util.List;
 
 public interface RegistrationService {
 
-    RegistrationResponseDTO createRegistration(RegistrationRequestDTO request);
-
-    List<InscritoResponseDTO> findInscritosByCurso(Integer idCurso);
-
-    List<InscritoResponseDTO> findInscritosFinalizadosByCurso(Integer idCurso);
-
+    void createRegistration(RegistrationRequestDTO request);
+    List<RegisteredResponseDTO> findInscritosByCurso(Integer idCurso);
+    List<RegisteredResponseDTO> findInscritosFinalizadosByCurso(Integer idCurso);
     void finalizarInscricoes(Integer idCurso);
 
 }

@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "course")
+@Table
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,17 +14,20 @@ public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_course")
     private Integer idCourse;
 
-    @Column(name = "nome", nullable = false, length = 120)
-    private String nome;
+    @Column(nullable = false, length = 120)
+    private String name;
 
-    @Column(name = "numero_vagas", nullable = false)
-    private Integer numeroVagas;
+    @Column(nullable = false)
+    private Integer numVacancies;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "situacao_curso", nullable = false, length = 20)
-    private CourseRegistrationStatus situacaoCurso = CourseRegistrationStatus.EM_ANDAMENTO;
+    @Column(nullable = false, length = 20)
+    private CourseRegistrationStatus courseRegistrationStatus = CourseRegistrationStatus.EM_ANDAMENTO;
+
+    public boolean isEmAndamento() {
+        return CourseRegistrationStatus.EM_ANDAMENTO.equals(this.courseRegistrationStatus);
+    }
 
 }
