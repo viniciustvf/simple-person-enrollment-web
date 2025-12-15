@@ -1,5 +1,6 @@
 package com.avaliacaopratica.api.controller;
 
+import com.avaliacaopratica.api.dto.registration.FinishRegistrationRequestDTO;
 import com.avaliacaopratica.api.dto.registration.RegisteredResponseDTO;
 import com.avaliacaopratica.api.dto.registration.RegistrationRequestDTO;
 import com.avaliacaopratica.api.services.RegistrationService;
@@ -25,11 +26,11 @@ public class RegistrationController {
         return ResponseEntity.ok("Inscrição realizada com sucesso.");
     }
 
-    @PostMapping("/finalizar-inscricao/{idCurso}")
+    @PostMapping("/finalizar-inscricao")
     public ResponseEntity<String> finalizarInscricoes(
-            @PathVariable Integer idCurso
+            @Valid @RequestBody FinishRegistrationRequestDTO request
     ) {
-        registrationService.finalizarInscricoes(idCurso);
+        registrationService.finalizarInscricoes(request);
         return ResponseEntity.ok("Finalização das inscrições está em andamento.");
     }
 

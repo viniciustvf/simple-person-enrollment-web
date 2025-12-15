@@ -4,20 +4,15 @@ export function formatNameLive(value: string): string {
       .replace(/\s+/g, " ")
       .split(" ")
       .map((word) =>
-        word
-          ? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-          : ""
+        word ? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() : ""
       )
       .join(" ");
-  }  
+  }
   
   export function isValidFullName(name: string): boolean {
     if (!name) return false;
   
-    const parts = name
-      .trim()
-      .split(" ")
-      .filter(Boolean);
+    const parts = name.trim().split(" ").filter(Boolean);
   
     if (parts.length < 2) return false;
   
@@ -27,7 +22,6 @@ export function formatNameLive(value: string): string {
         part.slice(1) === part.slice(1).toLowerCase()
     );
   }
-  
   
   export function isValidCPF(cpf: string): boolean {
     cpf = cpf.replace(/\D/g, "");
@@ -50,5 +44,4 @@ export function formatNameLive(value: string): string {
   export function isValidEmail(email: string): boolean {
     if (!email) return true;
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
-  
+  }  

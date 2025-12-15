@@ -9,24 +9,13 @@ export async function findAllPersons(): Promise<PersonDTO[]> {
   return data;
 }
 
-export async function createPerson(
-  payload: unknown
-): Promise<PersonDTO> {
-  const { data } = await backend.post<PersonDTO>(
-    BASE_PATH,
-    payload
-  );
+export async function createPerson(payload: unknown): Promise<PersonDTO> {
+  const { data } = await backend.post<PersonDTO>(BASE_PATH, payload);
   return data;
 }
 
-export async function updatePerson(
-  id: number,
-  pessoa: PersonDTO
-): Promise<PersonDTO> {
-  const { data } = await backend.put<PersonDTO>(
-    `${BASE_PATH}/${id}`,
-    pessoa
-  );
+export async function updatePerson(id: number, pessoa: PersonDTO): Promise<PersonDTO> {
+  const { data } = await backend.put<PersonDTO>(`${BASE_PATH}/${id}`, pessoa);
   return data;
 }
 
@@ -37,18 +26,13 @@ export async function deletePerson(id: number): Promise<void> {
 export async function existsByCpf(cpf: string): Promise<boolean> {
   const cleanCpf = cpf.replace(/\D/g, "");
 
-  const { data } = await backend.get<boolean>(
-    `${BASE_PATH}/exists/cpf/${cleanCpf}`
-  );
+  const { data } = await backend.get<boolean>(`${BASE_PATH}/exists/cpf/${cleanCpf}`);
+
   return data;
 }
 
-export async function integratePerson(
-  id: number
-): Promise<PersonDTO> {
-  const { data } = await backend.post<PersonDTO>(
-    `${BASE_PATH}/${id}/integrate`
-  );
+export async function integratePerson(id: number): Promise<PersonDTO> {
+  const { data } = await backend.post<PersonDTO>(`${BASE_PATH}/${id}/integrate`);
   return data;
 }
 
@@ -56,9 +40,8 @@ export async function findAllPersonsPaged(
   page: number,
   size: number
 ): Promise<PageResponse<PersonDTO>> {
-  const { data } = await backend.get<PageResponse<PersonDTO>>(
-    `${BASE_PATH}/paged`,
-    { params: { page, size } }
-  );
+  const { data } = await backend.get<PageResponse<PersonDTO>>(`${BASE_PATH}/paged`, {
+    params: { page, size },
+  });
   return data;
 }

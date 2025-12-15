@@ -1,20 +1,20 @@
 import { useState } from "react";
 import {
   Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
   Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-  TableRow,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
   TablePagination,
+  TableRow,
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
@@ -53,9 +53,11 @@ export default function PessoaList({
   onRowsPerPageChange,
 }: Props) {
   const theme = useTheme();
+
   const [openConfirm, setOpenConfirm] = useState(false);
   const [indexToDelete, setIndexToDelete] = useState<number | null>(null);
   const [disabledIntegrateIds, setDisabledIntegrateIds] = useState<number[]>([]);
+
   const { toastError } = useToast();
 
   function handleOpenDelete(index: number) {
@@ -148,19 +150,14 @@ export default function PessoaList({
                 <TableCell>{pessoa.name}</TableCell>
                 <TableCell>{maskCPF(pessoa.cpf)}</TableCell>
                 <TableCell>
-                  {pessoa.birth
-                    ? dayjs(pessoa.birth).format("DD/MM/YYYY")
-                    : "-"}
+                  {pessoa.birth ? dayjs(pessoa.birth).format("DD/MM/YYYY") : "-"}
                 </TableCell>
                 <TableCell>{pessoa.email || "-"}</TableCell>
                 <TableCell>
                   {pessoa.address?.cidade}/{pessoa.address?.uf}
                 </TableCell>
                 <TableCell align="center">
-                  <IconButton
-                    color="primary"
-                    onClick={() => onEdit?.(pessoa, index)}
-                  >
+                  <IconButton color="primary" onClick={() => onEdit?.(pessoa)}>
                     <EditIcon />
                   </IconButton>
 

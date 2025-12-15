@@ -1,5 +1,6 @@
 package com.avaliacaopratica.api.business;
 
+import com.avaliacaopratica.api.dto.registration.FinishRegistrationRequestDTO;
 import com.avaliacaopratica.api.exceptions.BusinessException;
 import com.avaliacaopratica.api.enums.CourseRegistrationStatus;
 import com.avaliacaopratica.api.enums.RegistrationStatus;
@@ -44,12 +45,12 @@ public class RegistrationBusiness {
         return registrationRepository.findInscritosByCurso(idCurso);
     }
 
-    public void enfileirarFinalizacao(Integer idCurso) {
-        Course course = courseRepository.findById(idCurso).orElseThrow(() -> new EntityNotFoundException("Curso não encontrado"));
+    public void enfileirarFinalizacao(FinishRegistrationRequestDTO request) {
+        Course course = courseRepository.findById(request.getIdCourse()).orElseThrow(() -> new EntityNotFoundException("Curso não encontrado"));
         if (!course.isEmAndamento()) {
             throw new BusinessException("Curso não está em andamento");
         }
-        registrationProducer.enviarParaFila(idCurso);
+        registrationProducer.enviarParaFila(request.getIdCourse());
     }
 
     @Transactional

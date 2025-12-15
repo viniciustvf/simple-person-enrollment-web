@@ -47,7 +47,7 @@ class CourseBusinessTest {
         assertEquals(CourseRegistrationStatus.EM_ANDAMENTO, entity.getCourseRegistrationStatus());
         verify(courseRepository).save(entity);
         verify(courseMapper).toEntity(request);
-        verify(courseMapper).toResponse(entity);
+        verify(courseMapper).toPostResponse(entity);
         verifyNoMoreInteractions(courseRepository, courseMapper);
     }
 

@@ -19,6 +19,8 @@ public interface RegistrationRepository extends JpaRepository<Registration, UUID
 
     boolean existsByCourse_IdCourseAndCpf(Integer idCourse, String cpf);
 
+    boolean existsByCpf(String cpf);
+
     @Query("""
         SELECT new com.avaliacaopratica.api.dto.registration.RegisteredResponseDTO(
             r.idRegistration,

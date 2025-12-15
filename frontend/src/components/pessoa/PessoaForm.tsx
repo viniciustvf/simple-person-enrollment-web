@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Paper, TextField, Grid } from "@mui/material";
+import { Box, Button, Grid, Paper, TextField } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers";
+import InputMask from "react-input-mask";
 import EnderecoForm from "../endereco/EnderecoForm";
 import { useToast } from "../../hooks/useToast";
 import { formatNameLive, isValidCPF, isValidEmail } from "../../util/validators";
-import InputMask from "react-input-mask";
 import { PersonDTO } from "../../models/person/PersonDTO";
 import { AddressDTO } from "../../models/address/AddressDTO";
 import { existsByCpf } from "../../services/backend/person.service";
@@ -16,7 +16,11 @@ interface Props {
   onCancelEdit?: () => void;
 }
 
-export default function PessoaForm({ onAddPessoa, pessoaEditando, onCancelEdit }: Props) {
+export default function PessoaForm({
+  onAddPessoa,
+  pessoaEditando,
+  onCancelEdit,
+}: Props) {
   const { toastError } = useToast();
 
   const [nome, setNome] = useState("");
@@ -37,36 +41,46 @@ export default function PessoaForm({ onAddPessoa, pessoaEditando, onCancelEdit }
       setNome(pessoaEditando.name || "");
       setCpf(pessoaEditando.cpf || "");
       setEmail(pessoaEditando.email || "");
-      setDataNascimento(pessoaEditando.birth ? dayjs(pessoaEditando.birth) : null);
-      setEndereco(pessoaEditando.address || { cep: "", rua: "", numero: "", cidade: "", uf: "" });
+      setDataNascimento(
+        pessoaEditando.birth ? dayjs(pessoaEditando.birth) : null
+      );
+      setEndereco(
+        pessoaEditando.address || {
+          cep: "",
+          rua: "",
+          numero: "",
+          cidade: "",
+          uf: "",
+        }
+      );
     }
   }, [pessoaEditando]);
 
   async function salvarPessoa() {
     const errors: string[] = [];
-  
+
     if (!nome.trim()) errors.push("O campo Nome é obrigatório.");
     if (!cpf.trim()) errors.push("O campo CPF é obrigatório.");
-  
+
     if (nome.trim()) {
       const partesNome = nome.trim().split(" ").filter(Boolean);
       if (partesNome.length < 2) {
         errors.push("Informe pelo menos nome e sobrenome.");
       }
     }
-  
+
     if (dataNascimento && dayjs(dataNascimento).isAfter(dayjs())) {
       errors.push("Data de nascimento não pode ser futura.");
     }
-  
+
     if (cpf.trim() && !isValidCPF(cpf)) {
       errors.push("CPF inválido.");
     }
-  
+
     if (email && !isValidEmail(email)) {
       errors.push("E-mail inválido.");
     }
-  
+
     if (endereco.cep) {
       const camposEndereco = [
         endereco.rua,
@@ -74,19 +88,19 @@ export default function PessoaForm({ onAddPessoa, pessoaEditando, onCancelEdit }
         endereco.cidade,
         endereco.uf,
       ];
-  
+
       if (camposEndereco.some((c) => !c)) {
         errors.push("Preencha os campos do endereço.");
       }
     }
-  
+
     if (errors.length > 0) {
       errors.forEach((msg) => toastError(msg));
       return;
     }
-  
+
     const cpfLimpo = cpf.replace(/\D/g, "");
-  
+
     if (!pessoaEditando) {
       const cpfJaExiste = await existsByCpf(cpfLimpo);
       if (cpfJaExiste) {
@@ -94,7 +108,7 @@ export default function PessoaForm({ onAddPessoa, pessoaEditando, onCancelEdit }
         return;
       }
     }
-  
+
     const novaPessoa: PersonDTO = {
       idPerson: pessoaEditando?.idPerson,
       name: nome.trim(),
@@ -108,12 +122,12 @@ export default function PessoaForm({ onAddPessoa, pessoaEditando, onCancelEdit }
         cidade: endereco.cidade,
         uf: endereco.uf,
       },
-      integrationStatus: ""
+      integrationStatus: "",
     };
-  
+
     onAddPessoa(novaPessoa);
     limparFormulario();
-  }  
+  }
 
   function limparFormulario() {
     setNome("");
@@ -160,7 +174,13 @@ export default function PessoaForm({ onAddPessoa, pessoaEditando, onCancelEdit }
               onChange={(e) => setCpf(e.target.value)}
             >
               {(inputProps) => (
-                <TextField {...inputProps} fullWidth label="CPF" size="small" required />
+                <TextField
+                  {...inputProps}
+                  fullWidth
+                  label="CPF"
+                  size="small"
+                  required
+                />
               )}
             </InputMask>
           </Grid>
@@ -170,7 +190,21 @@ export default function PessoaForm({ onAddPessoa, pessoaEditando, onCancelEdit }
               fullWidth
               label="Email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                const onlyValidChars = e.target.value
+                  .toLowerCase()
+                  .replace(/\s/g, "")
+                  .replace(/[^a-z0-9@._+-]/g, "");
+
+                setEmail(onlyValidChars);
+              }}
+              inputProps={{
+                style: { textTransform: "lowercase" },
+                inputMode: "email",
+                autoCapitalize: "none",
+                autoCorrect: "off",
+                spellCheck: false,
+              }}
               size="small"
             />
           </Grid>
@@ -187,10 +221,7 @@ export default function PessoaForm({ onAddPessoa, pessoaEditando, onCancelEdit }
             </Button>
 
             {pessoaEditando && (
-              <Button
-                variant="outlined"
-                onClick={limparFormulario}
-              >
+              <Button variant="outlined" onClick={limparFormulario}>
                 Cancelar
               </Button>
             )}

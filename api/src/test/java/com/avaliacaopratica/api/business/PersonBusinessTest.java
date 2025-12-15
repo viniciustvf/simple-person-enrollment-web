@@ -2,9 +2,11 @@ package com.avaliacaopratica.api.business;
 
 import com.avaliacaopratica.api.dto.person.PersonRequestDTO;
 import com.avaliacaopratica.api.dto.person.PersonResponseDTO;
+import com.avaliacaopratica.api.exceptions.BusinessException;
 import com.avaliacaopratica.api.mapper.PersonMapper;
 import com.avaliacaopratica.api.models.Person;
 import com.avaliacaopratica.api.repositories.PersonRepository;
+import com.avaliacaopratica.api.repositories.RegistrationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +24,9 @@ class PersonBusinessTest {
 
     @Mock
     private PersonRepository personRepository;
+
+    @Mock
+    private RegistrationRepository registrationRepository;
 
     @Mock
     private PersonMapper personMapper;
@@ -176,5 +181,35 @@ class PersonBusinessTest {
 
         assertTrue(personBusiness.existsByCpf("123"));
         verify(personRepository).existsByCpf("123");
+    }
+
+    @Test
+    void deveLancarExcecaoAoDeletarPessoaQuandoPossuiInscricao() {
+        Integer id = 1;
+
+        Person entity = new Person();
+        entity.setCpf("123");
+
+        when(personRepository.findById(id)).thenReturn(Optional.of(entity));
+        when(registrationRepository.existsByCpf("123")).thenReturn(true);
+
+        assertThrows(BusinessException.class, () -> personBusiness.delete(id));
+
+        verify(personRepository, never()).delete(any());
+    }
+
+    @Test
+    void deveDeletarPessoaQuandoNaoPossuiInscricao() {
+        Integer id = 1;
+
+        Person entity = new Person();
+        entity.setCpf("123");
+
+        when(personRepository.findById(id)).thenReturn(Optional.of(entity));
+        when(registrationRepository.existsByCpf("123")).thenReturn(false);
+
+        personBusiness.delete(id);
+
+        verify(personRepository).delete(entity);
     }
 }

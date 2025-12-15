@@ -148,15 +148,15 @@ export default function Inscricao() {
         onCursoSelecionado={handleCursoSelecionado}
         onFinalizar={handleFinalizar} 
         cursoSelecionado={cursoSelecionado}
-        />
+      />
 
       <SelectedList selecionados={selecionados} onRefresh={handleRefreshSelecionados} />
       <Backdrop
-            open={loadingFinalizar}
-            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        >
+        open={loadingFinalizar}
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+      >
         <CircularProgress color="inherit" />
-        </Backdrop>
+      </Backdrop>
     </div>
   );
 }

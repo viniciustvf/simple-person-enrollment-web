@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
+import { Backdrop, CircularProgress, Typography } from "@mui/material";
 import PessoaForm from "../components/pessoa/PessoaForm";
 import PessoaList from "../components/pessoa/PessoaList";
 import { PersonDTO } from "../models/person/PersonDTO";
-import {
-  Typography,
-  Backdrop,
-  CircularProgress,
-} from "@mui/material";
 import {
   createPerson,
   deletePerson,
@@ -33,6 +29,7 @@ export default function Pessoa() {
   async function loadPersons() {
     try {
       setLoading(true);
+
       const response = await findAllPersonsPaged(page, rowsPerPage);
       setPessoas(response.content);
       setTotal(response.totalElements);
@@ -77,6 +74,7 @@ export default function Pessoa() {
 
     try {
       setLoading(true);
+
       await deletePerson(pessoa.idPerson);
       toastSuccess("Pessoa excluída com sucesso!");
 
@@ -98,6 +96,7 @@ export default function Pessoa() {
 
     try {
       setLoading(true);
+
       await integratePerson(pessoa.idPerson);
       toastSuccess("Pessoa enviada para integração!");
 

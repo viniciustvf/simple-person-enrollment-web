@@ -57,9 +57,7 @@ export default function EnderecoForm({ endereco, onChange }: Props) {
               fullWidth
               label="Logradouro"
               value={endereco.rua}
-              onChange={(e) =>
-                onChange({ ...endereco, rua: e.target.value })
-              }
+              onChange={(e) => onChange({ ...endereco, rua: e.target.value })}
               size="small"
             />
           </Grid>
@@ -80,45 +78,45 @@ export default function EnderecoForm({ endereco, onChange }: Props) {
           </Grid>
 
           <Grid item xs={12} sm={4}>
-          <TextField
-            fullWidth
-            label="Cidade"
-            value={endereco.cidade}
-            onChange={(e) =>
-              onChange({
-                ...endereco,
-                cidade: e.target.value.replace(/[^A-Za-zÀ-ÿ\s]/g, ""),
-              })
-            }
-            inputProps={{
-              inputMode: "text",
-              pattern: "[A-Za-zÀ-ÿ\\s]*",
-            }}
-            size="small"
-          />
+            <TextField
+              fullWidth
+              label="Cidade"
+              value={endereco.cidade}
+              onChange={(e) =>
+                onChange({
+                  ...endereco,
+                  cidade: e.target.value.replace(/[^A-Za-zÀ-ÿ\s]/g, ""),
+                })
+              }
+              inputProps={{
+                inputMode: "text",
+                pattern: "[A-Za-zÀ-ÿ\\s]*",
+              }}
+              size="small"
+            />
           </Grid>
 
           <Grid item xs={12} sm={1}>
-          <TextField
-            fullWidth
-            label="UF"
-            value={endereco.uf}
-            onChange={(e) =>
-              onChange({
-                ...endereco,
-                uf: e.target.value
-                  .replace(/[^A-Za-z]/g, "")
-                  .toUpperCase()
-                  .slice(0, 2),
-              })
-            }
-            inputProps={{
-              maxLength: 2,
-              inputMode: "text",
-              pattern: "[A-Za-z]{2}",
-            }}
-            size="small"
-          />
+            <TextField
+              fullWidth
+              label="UF"
+              value={endereco.uf}
+              onChange={(e) =>
+                onChange({
+                  ...endereco,
+                  uf: e.target.value
+                    .replace(/[^A-Za-z]/g, "")
+                    .toUpperCase()
+                    .slice(0, 2),
+                })
+              }
+              inputProps={{
+                maxLength: 2,
+                inputMode: "text",
+                pattern: "[A-Za-z]{2}",
+              }}
+              size="small"
+            />
           </Grid>
         </Grid>
       </Paper>

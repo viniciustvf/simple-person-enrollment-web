@@ -1,6 +1,7 @@
 package com.avaliacaopratica.api.services.impl;
 
 import com.avaliacaopratica.api.business.RegistrationBusiness;
+import com.avaliacaopratica.api.dto.registration.FinishRegistrationRequestDTO;
 import com.avaliacaopratica.api.dto.registration.RegisteredResponseDTO;
 import com.avaliacaopratica.api.dto.registration.RegistrationRequestDTO;
 import com.avaliacaopratica.api.dto.registration.RegistrationResponseDTO;
@@ -32,7 +33,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public void finalizarInscricoes(Integer idCurso) {
-        registrationBusiness.enfileirarFinalizacao(idCurso);
+    public void finalizarInscricoes(FinishRegistrationRequestDTO request) {
+        registrationBusiness.enfileirarFinalizacao(request);
     }
 }

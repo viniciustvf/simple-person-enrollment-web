@@ -15,7 +15,7 @@ public class DeletePersonIntegrationStrategy implements PersonIntegrationStrateg
     @Value("${api.url}")
     private String apiUrl;
 
-    private static final String DELETE_PERSON_PATH = "/person/cpf/{cpf}";
+    private static final String DELETE_PERSON_PATH = "/v1/person/cpf/{cpf}";
 
     @Override
     public void execute(IntegratePersonRequestDTO dto) {

@@ -1,19 +1,14 @@
-import {
-  RegistrationRequestDTO,
-} from "../../models/registration/RegistrationDTO";
+import { api } from "../../api/api";
 import { InscricaoDTO } from "../../models/registration/InscricaoDTO";
 import { InscritoResponseDTO } from "../../models/registration/InscritoResponseDTO";
-import { api } from "../../api/api";
+import { RegistrationRequestDTO } from "../../models/registration/RegistrationDTO";
 
 const BASE_PATH = "/v1/registrations";
 
 export async function createRegistration(
   payload: RegistrationRequestDTO
 ): Promise<string> {
-  const { data } = await api.post<string>(
-    `${BASE_PATH}/inscricao`,
-    payload
-  );
+  const { data } = await api.post<string>(`${BASE_PATH}/inscricao`, payload);
   return data;
 }
 
@@ -28,15 +23,14 @@ export async function findInscritosByCurso(
   const { data } = await api.get<InscritoResponseDTO[]>(
     `${BASE_PATH}/inscritos/${idCurso}`
   );
-  console.log(data);
   return data;
 }
 
-export async function finalizarInscricoes(
-  idCurso: number
-): Promise<string> {
+export async function finalizarInscricoes(idCurso: number): Promise<string> {
   const { data } = await api.post<string>(
-    `${BASE_PATH}/finalizar-inscricao/${idCurso}`
+    `${BASE_PATH}/finalizar-inscricao`,
+    idCurso,
+    { headers: { "Content-Type": "application/json" } }
   );
   return data;
 }

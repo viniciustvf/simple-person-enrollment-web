@@ -1,5 +1,6 @@
 package com.avaliacaopratica.api.business;
 
+import com.avaliacaopratica.api.dto.registration.FinishRegistrationRequestDTO;
 import com.avaliacaopratica.api.dto.registration.RegisteredResponseDTO;
 import com.avaliacaopratica.api.dto.registration.RegistrationRequestDTO;
 import com.avaliacaopratica.api.dto.registration.RegistrationResponseDTO;
@@ -53,12 +54,10 @@ class RegistrationBusinessTest {
         when(course.isEmAndamento()).thenReturn(true);
 
         Registration entity = new Registration();
-        RegistrationResponseDTO response = mock(RegistrationResponseDTO.class);
 
         when(courseRepository.findById(1)).thenReturn(Optional.of(course));
         when(registrationRepository.existsByCourse_IdCourseAndCpf(1, "123")).thenReturn(false);
         when(registrationMapper.toEntity(request)).thenReturn(entity);
-        when(registrationMapper.toResponse(entity)).thenReturn(response);
 
         registrationBusiness.create(request);
 
@@ -124,7 +123,10 @@ class RegistrationBusinessTest {
         when(course.isEmAndamento()).thenReturn(true);
         when(courseRepository.findById(1)).thenReturn(Optional.of(course));
 
-        registrationBusiness.enfileirarFinalizacao(1);
+        FinishRegistrationRequestDTO request = new FinishRegistrationRequestDTO();
+        request.setIdCourse(1);
+
+        registrationBusiness.enfileirarFinalizacao(request);
 
         verify(registrationProducer).enviarParaFila(1);
     }
@@ -135,7 +137,10 @@ class RegistrationBusinessTest {
         when(course.isEmAndamento()).thenReturn(false);
         when(courseRepository.findById(1)).thenReturn(Optional.of(course));
 
-        assertThrows(BusinessException.class, () -> registrationBusiness.enfileirarFinalizacao(1));
+        FinishRegistrationRequestDTO request = new FinishRegistrationRequestDTO();
+        request.setIdCourse(1);
+
+        assertThrows(BusinessException.class, () -> registrationBusiness.enfileirarFinalizacao(request));
         verify(registrationProducer, never()).enviarParaFila(anyInt());
     }
 

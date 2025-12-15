@@ -8,14 +8,10 @@ export async function findAllPersonsApi(): Promise<PersonApiDTO[]> {
   return data;
 }
 
-export async function findPersonByCpfApi(
-  cpf: string
-): Promise<PersonApiDTO> {
+export async function findPersonByCpfApi(cpf: string): Promise<PersonApiDTO> {
   const cleanCpf = cpf.replace(/\D/g, "");
 
-  const { data } = await api.get<PersonApiDTO>(
-    `${BASE_PATH}/cpf/${cleanCpf}`
-  );
+  const { data } = await api.get<PersonApiDTO>(`${BASE_PATH}/cpf/${cleanCpf}`);
 
   return data;
 }

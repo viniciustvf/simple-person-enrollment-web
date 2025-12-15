@@ -22,7 +22,7 @@ public class CreateUpdatePersonIntegrationStrategy implements PersonIntegrationS
     @Value("${api.url}")
     private String apiUrl;
 
-    private static final String PERSON_PATH = "/person";
+    private static final String PERSON_PATH = "/v1/person";
 
     @Override
     public void execute(IntegratePersonRequestDTO dto) {
