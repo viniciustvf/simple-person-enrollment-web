@@ -4,4 +4,3 @@ export interface CourseDTO {
     numVacancies: number;
     courseRegistrationStatus: string;
   }
-  

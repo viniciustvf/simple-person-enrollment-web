@@ -82,6 +82,11 @@ export default function PessoaForm({
     }
 
     if (endereco.cep) {
+      const cepOk = endereco.cep.replace(/\D/g, "").length === 8;
+      if (!cepOk) {
+        errors.push("CEP inválido.");
+      }
+
       const camposEndereco = [
         endereco.rua,
         endereco.numero,
@@ -91,6 +96,40 @@ export default function PessoaForm({
 
       if (camposEndereco.some((c) => !c)) {
         errors.push("Preencha os campos do endereço.");
+      }
+
+      const ufsValidas = [
+        "AC",
+        "AL",
+        "AP",
+        "AM",
+        "BA",
+        "CE",
+        "DF",
+        "ES",
+        "GO",
+        "MA",
+        "MT",
+        "MS",
+        "MG",
+        "PA",
+        "PB",
+        "PR",
+        "PE",
+        "PI",
+        "RJ",
+        "RN",
+        "RS",
+        "RO",
+        "RR",
+        "SC",
+        "SP",
+        "SE",
+        "TO",
+      ];
+
+      if (endereco.uf && !ufsValidas.includes(endereco.uf.toUpperCase())) {
+        errors.push("UF inválida.");
       }
     }
 

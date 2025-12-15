@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Box, Grid, Paper, TextField } from "@mui/material";
+import { Box, Grid, Paper, TextField, MenuItem } from "@mui/material";
 import InputMask from "react-input-mask";
 import { fetchAddressByCep } from "../../services/external/viacep.service";
 import { AddressDTO } from "../../models/address/AddressDTO";
@@ -8,6 +8,36 @@ interface Props {
   endereco: AddressDTO;
   onChange: (endereco: AddressDTO) => void;
 }
+
+const UFS = [
+  "AC",
+  "AL",
+  "AP",
+  "AM",
+  "BA",
+  "CE",
+  "DF",
+  "ES",
+  "GO",
+  "MA",
+  "MT",
+  "MS",
+  "MG",
+  "PA",
+  "PB",
+  "PR",
+  "PE",
+  "PI",
+  "RJ",
+  "RN",
+  "RS",
+  "RO",
+  "RR",
+  "SC",
+  "SP",
+  "SE",
+  "TO",
+] as const;
 
 export default function EnderecoForm({ endereco, onChange }: Props) {
   const cepLimpo = endereco.cep.replace(/\D/g, "");
@@ -21,9 +51,11 @@ export default function EnderecoForm({ endereco, onChange }: Props) {
         ...endereco,
         rua: data!.logradouro || endereco.rua,
         cidade: data!.localidade || endereco.cidade,
-        uf: data!.uf || endereco.uf,
+        uf: (data!.uf || endereco.uf || "").toUpperCase(),
       });
-    } catch { /* empty */ }
+    } catch {
+      /* empty */
+    }
   }
 
   useEffect(() => {
@@ -98,25 +130,37 @@ export default function EnderecoForm({ endereco, onChange }: Props) {
 
           <Grid item xs={12} sm={1}>
             <TextField
+              select
               fullWidth
               label="UF"
-              value={endereco.uf}
+              value={endereco.uf || ""}
               onChange={(e) =>
                 onChange({
                   ...endereco,
-                  uf: e.target.value
-                    .replace(/[^A-Za-z]/g, "")
-                    .toUpperCase()
-                    .slice(0, 2),
+                  uf: String(e.target.value).toUpperCase(),
                 })
               }
-              inputProps={{
-                maxLength: 2,
-                inputMode: "text",
-                pattern: "[A-Za-z]{2}",
-              }}
               size="small"
-            />
+              SelectProps={{
+                MenuProps: {
+                  PaperProps: {
+                    sx: {
+                      maxHeight: 200,
+                    },
+                  },
+                },
+              }}
+            >
+              <MenuItem value="" sx={{ py: 0.5, minHeight: 32 }}>
+                Selecione
+              </MenuItem>
+
+              {UFS.map((uf) => (
+                <MenuItem key={uf} value={uf} sx={{ py: 0.5, minHeight: 32 }}>
+                  {uf}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
         </Grid>
       </Paper>

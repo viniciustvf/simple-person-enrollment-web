@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
-import { Backdrop, CircularProgress, Typography } from "@mui/material";
+import {
+  Backdrop,
+  Box,
+  CircularProgress,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
+import PersonIcon from "@mui/icons-material/Person";
 import PessoaForm from "../components/pessoa/PessoaForm";
 import PessoaList from "../components/pessoa/PessoaList";
 import { PersonDTO } from "../models/person/PersonDTO";
@@ -111,16 +119,63 @@ export default function Pessoa() {
 
   return (
     <div>
-      <Typography
-        variant="h5"
-        color="#015caa"
-        fontWeight="bold"
-        p={2}
-        mb={3}
-        mt={3}
+      <Paper
+        elevation={0}
+        sx={{
+          mt: 3,
+          mb: 3,
+          p: 2.5,
+          borderRadius: 3,
+          position: "relative",
+          overflow: "hidden",
+          border: "1px solid",
+          borderColor: "divider",
+          background:
+            "linear-gradient(135deg, rgba(1,92,170,0.10) 0%, rgba(1,92,170,0.04) 50%, rgba(1,92,170,0.00) 100%)",
+        }}
       >
-        Cadastro de Pessoa
-      </Typography>
+        <Box
+          sx={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            bottom: 0,
+            width: 6,
+            bgcolor: "#015caa",
+          }}
+        />
+
+        <Stack direction="row" spacing={1.5} alignItems="center">
+          <Box
+            sx={{
+              width: 44,
+              height: 44,
+              borderRadius: 2,
+              display: "grid",
+              placeItems: "center",
+              bgcolor: "rgba(1,92,170,0.12)",
+            }}
+          >
+            <PersonIcon sx={{ color: "#015caa" }} />
+          </Box>
+
+          <Box>
+            <Typography
+              variant="h5"
+              sx={{ color: "#015caa", fontWeight: 800, lineHeight: 1.1 }}
+            >
+              Cadastro de Pessoa
+            </Typography>
+
+            <Typography
+              variant="body2"
+              sx={{ color: "text.secondary", mt: 0.3 }}
+            >
+              Cadastre, edite e integre pessoas com validações e consulta de CEP.
+            </Typography>
+          </Box>
+        </Stack>
+      </Paper>
 
       <PessoaForm
         pessoaEditando={pessoaEditando}
