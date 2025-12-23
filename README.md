@@ -5,7 +5,8 @@ Projeto desenvolvido em 30 horas.
 O objetivo é entregar uma solução composta por **três aplicações** (Frontend, Backend WEB e API), integradas entre si, incluindo **cadastro de pessoa**, **consulta de CEP (ViaCEP)**, **inscrição em curso**, **finalização via fila (RabbitMQ)** e **consulta de selecionados**.
 
 ---
-
+<img width="1900" height="953" alt="pessoa" src="https://github.com/user-attachments/assets/d9637b68-e6d6-4e0a-87d7-7bd3097f5750" />
+<img width="1896" height="948" alt="inscricao" src="https://github.com/user-attachments/assets/d1aad57f-346b-41b3-9772-98b858356301" />
 ## ✅ Funcionalidades implementadas
 
 ### Aplicação WEB (Backend + Frontend)
