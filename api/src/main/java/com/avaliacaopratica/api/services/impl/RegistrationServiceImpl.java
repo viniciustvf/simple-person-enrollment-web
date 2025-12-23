@@ -4,7 +4,6 @@ import com.avaliacaopratica.api.business.RegistrationBusiness;
 import com.avaliacaopratica.api.dto.registration.FinishRegistrationRequestDTO;
 import com.avaliacaopratica.api.dto.registration.RegisteredResponseDTO;
 import com.avaliacaopratica.api.dto.registration.RegistrationRequestDTO;
-import com.avaliacaopratica.api.dto.registration.RegistrationResponseDTO;
 import com.avaliacaopratica.api.services.RegistrationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

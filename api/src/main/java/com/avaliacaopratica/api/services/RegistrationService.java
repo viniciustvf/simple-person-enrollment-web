@@ -3,7 +3,6 @@ package com.avaliacaopratica.api.services;
 import com.avaliacaopratica.api.dto.registration.FinishRegistrationRequestDTO;
 import com.avaliacaopratica.api.dto.registration.RegisteredResponseDTO;
 import com.avaliacaopratica.api.dto.registration.RegistrationRequestDTO;
-import com.avaliacaopratica.api.dto.registration.RegistrationResponseDTO;
 
 import java.util.List;
 

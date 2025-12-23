@@ -3,8 +3,6 @@ package com.avaliacaopratica.api.services;
 import com.avaliacaopratica.api.dto.course.CoursePostResponseDTO;
 import com.avaliacaopratica.api.dto.course.CourseRequestDTO;
 import com.avaliacaopratica.api.dto.course.CourseResponseDTO;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 

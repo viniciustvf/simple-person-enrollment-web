@@ -6,8 +6,6 @@ import com.avaliacaopratica.api.dto.person.PersonResponseDTO;
 import com.avaliacaopratica.api.services.PersonService;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

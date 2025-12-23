@@ -24,19 +24,15 @@ public class PersonBusiness {
     private final PersonMapper personMapper;
 
     public PersonResponseDTO create(PersonRequestDTO request) {
-        Person entity = personRepository.findByCpf(request.getCpf()).orElseGet(Person::new);
-        entity.setName(request.getName());
-        entity.setCpf(request.getCpf());
-        entity.setEmail(request.getEmail());
+        Person entity = personRepository.findByCpf(request.getCpf()).orElseGet(() -> personMapper.toEntity(request));
+        personMapper.toEntity(request, entity);
         personRepository.save(entity);
         return personMapper.toResponse(entity);
     }
 
     public PersonResponseDTO update(Integer id, PersonRequestDTO request) {
         Person entity = findByIdOrThrow(id);
-        entity.setName(request.getName());
-        entity.setEmail(request.getEmail());
-        entity.setCpf(request.getCpf());
+        personMapper.toEntity(request, entity);
         personRepository.save(entity);
         return personMapper.toResponse(entity);
     }
@@ -54,8 +50,7 @@ public class PersonBusiness {
     }
 
     public PersonResponseDTO findByCpf(String cpf) {
-        Person entity = findByCpfOrThrow(cpf);
-        return personMapper.toResponse(entity);
+        return personMapper.toResponse(findByCpfOrThrow(cpf));
     }
 
     public List<PersonResponseDTO> findAll() {
@@ -68,7 +63,6 @@ public class PersonBusiness {
     public boolean existsByCpf(String cpf) {
         return personRepository.existsByCpf(cpf);
     }
-
 
     private Person findByIdOrThrow(Integer id) {
         return personRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Person not found"));

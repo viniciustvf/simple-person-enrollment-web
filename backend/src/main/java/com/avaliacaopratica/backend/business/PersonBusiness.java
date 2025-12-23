@@ -5,6 +5,7 @@ import com.avaliacaopratica.backend.dto.person.PersonResponseDTO;
 import com.avaliacaopratica.backend.enums.IntegrationAction;
 import com.avaliacaopratica.backend.enums.IntegrationStatus;
 import com.avaliacaopratica.backend.exceptions.IntegrityViolation;
+import com.avaliacaopratica.backend.mapper.AddressMapper;
 import com.avaliacaopratica.backend.mapper.PersonMapper;
 import com.avaliacaopratica.backend.messaging.producer.PersonProducer;
 import com.avaliacaopratica.backend.models.Address;
@@ -25,6 +26,7 @@ public class PersonBusiness {
 
     private final PersonRepository personRepository;
     private final PersonMapper personMapper;
+    private final AddressMapper addressMapper;
     private final PersonProducer personProducer;
 
     @Transactional
@@ -38,10 +40,11 @@ public class PersonBusiness {
     @Transactional
     public PersonResponseDTO update(Integer id, PersonRequestDTO request) {
         Person entity = findByIdOrThrow(id);
-
-        updateBasicData(entity, request);
-        updateAddress(entity, request);
-
+        personMapper.toEntity(request, entity);
+        if (request.getAddress() != null) {
+            Address address = getOrCreateAddress(entity);
+            addressMapper.toEntity(request.getAddress(), address);
+        }
         personRepository.save(entity);
         return personMapper.toResponse(entity);
     }
@@ -86,27 +89,6 @@ public class PersonBusiness {
         if (personRepository.existsByCpf(request.getCpf())) {
             throw new IntegrityViolation("CPF já cadastrado.");
         }
-    }
-
-    private void updateBasicData(Person entity, PersonRequestDTO request) {
-        entity.setName(request.getName());
-        entity.setEmail(request.getEmail());
-        entity.setBirth(request.getBirth());
-        entity.setCpf(request.getCpf());
-    }
-
-    private void updateAddress(Person entity, PersonRequestDTO request) {
-        if (request.getAddress() == null) {
-            return;
-        }
-
-        Address address = getOrCreateAddress(entity);
-
-        address.setCep(request.getAddress().getCep());
-        address.setRua(request.getAddress().getRua());
-        address.setNumero(request.getAddress().getNumero());
-        address.setCidade(request.getAddress().getCidade());
-        address.setUf(request.getAddress().getUf());
     }
 
     private Address getOrCreateAddress(Person entity) {

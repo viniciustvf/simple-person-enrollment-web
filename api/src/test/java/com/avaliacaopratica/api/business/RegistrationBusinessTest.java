@@ -3,7 +3,6 @@ package com.avaliacaopratica.api.business;
 import com.avaliacaopratica.api.dto.registration.FinishRegistrationRequestDTO;
 import com.avaliacaopratica.api.dto.registration.RegisteredResponseDTO;
 import com.avaliacaopratica.api.dto.registration.RegistrationRequestDTO;
-import com.avaliacaopratica.api.dto.registration.RegistrationResponseDTO;
 import com.avaliacaopratica.api.enums.CourseRegistrationStatus;
 import com.avaliacaopratica.api.enums.RegistrationStatus;
 import com.avaliacaopratica.api.exceptions.BusinessException;

@@ -10,7 +10,6 @@ import com.avaliacaopratica.api.models.Course;
 import com.avaliacaopratica.api.models.Registration;
 import com.avaliacaopratica.api.dto.registration.RegisteredResponseDTO;
 import com.avaliacaopratica.api.dto.registration.RegistrationRequestDTO;
-import com.avaliacaopratica.api.dto.registration.RegistrationResponseDTO;
 import com.avaliacaopratica.api.repositories.CourseRepository;
 import com.avaliacaopratica.api.repositories.RegistrationRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -32,9 +31,8 @@ public class RegistrationBusiness {
     private final CourseRepository courseRepository;
     private final RegistrationProducer registrationProducer;
 
-    @Transactional
     public void create(RegistrationRequestDTO request) {
-        Course course = courseRepository.findById(request.getIdCourse()).orElseThrow(() -> new EntityNotFoundException("Curso não encontrado"));
+        Course course = findCourseOrThrow(request.getIdCourse());
         validate(course, request);
         Registration registration = registrationMapper.toEntity(request);
         registration.setCourse(course);
@@ -46,29 +44,21 @@ public class RegistrationBusiness {
     }
 
     public void enfileirarFinalizacao(FinishRegistrationRequestDTO request) {
-        Course course = courseRepository.findById(request.getIdCourse()).orElseThrow(() -> new EntityNotFoundException("Curso não encontrado"));
+        Course course = findCourseOrThrow(request.getIdCourse());
         if (!course.isEmAndamento()) {
             throw new BusinessException("Curso não está em andamento");
         }
         registrationProducer.enviarParaFila(request.getIdCourse());
     }
 
-    @Transactional
     public void finalizarInscricoesCurso(Integer idCurso) {
         log.info("Iniciando finalização das inscrições do curso {}", idCurso);
-        Course course = courseRepository.findById(idCurso).orElseThrow(() -> new EntityNotFoundException("Curso não encontrado"));
+        Course course = findCourseOrThrow(idCurso);
         List<Registration> registrations = registrationRepository.findByCourse_IdCourseOrderByScoreDesc(idCurso);
 
-        registrations.sort((registrationA, registrationB) -> registrationB.getScore().compareTo(registrationA.getScore()));
         int numVacancies = course.getNumVacancies();
         for (int i = 0; i < registrations.size(); i++) {
-            Registration registration = registrations.get(i);
-
-            if (i < numVacancies) {
-                registration.setRegistrationStatus(RegistrationStatus.SELECIONADO);
-            } else {
-                registration.setRegistrationStatus(RegistrationStatus.NAO_SELECIONADO);
-            }
+            registrations.get(i).setRegistrationStatus(i < numVacancies ? RegistrationStatus.SELECIONADO : RegistrationStatus.NAO_SELECIONADO);
         }
 
         course.setCourseRegistrationStatus(CourseRegistrationStatus.FINALIZADA);
@@ -82,14 +72,16 @@ public class RegistrationBusiness {
         return registrationRepository.findInscritosFinalizadosByCurso(idCurso);
     }
 
+    private Course findCourseOrThrow(Integer idCurso) {
+        return courseRepository.findById(idCurso).orElseThrow(() -> new EntityNotFoundException("Curso não encontrado"));
+    }
+
     private void validate(Course course, RegistrationRequestDTO request) {
         if (!course.isEmAndamento()) {
             throw new BusinessException("Curso não está em andamento");
         }
 
-        boolean jaInscrito = registrationRepository.existsByCourse_IdCourseAndCpf(request.getIdCourse(), request.getCpf());
-
-        if (jaInscrito) {
+        if (registrationRepository.existsByCourse_IdCourseAndCpf(request.getIdCourse(), request.getCpf())) {
             throw new BusinessException("Pessoa já está inscrita neste curso");
         }
     }

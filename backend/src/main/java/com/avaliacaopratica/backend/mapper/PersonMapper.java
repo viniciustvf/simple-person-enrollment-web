@@ -8,11 +8,14 @@ import com.avaliacaopratica.backend.models.Person;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = AddressMapper.class)
 public interface PersonMapper {
 
     Person toEntity(PersonRequestDTO dto);
+
+    void toEntity(PersonRequestDTO dto, @MappingTarget Person entity);
 
     @Mapping(target = "integrationStatus", expression = "java(person.getIntegrationStatus().toString())")
     @Mapping(target = "mensagem", constant = "Operação realizada com sucesso")

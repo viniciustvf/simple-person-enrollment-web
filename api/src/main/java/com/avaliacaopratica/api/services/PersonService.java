@@ -2,8 +2,6 @@ package com.avaliacaopratica.api.services;
 
 import com.avaliacaopratica.api.dto.person.PersonRequestDTO;
 import com.avaliacaopratica.api.dto.person.PersonResponseDTO;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 

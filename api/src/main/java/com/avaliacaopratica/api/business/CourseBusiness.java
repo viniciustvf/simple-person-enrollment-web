@@ -29,8 +29,7 @@ public class CourseBusiness {
 
     public CourseResponseDTO update(Integer id, CourseRequestDTO request) {
         Course entity = findByIdOrThrow(id);
-        entity.setName(request.getName());
-        entity.setNumVacancies(request.getNumVacancies());
+        courseMapper.toEntity(request, entity);
         courseRepository.save(entity);
         return courseMapper.toResponse(entity);
     }
@@ -47,8 +46,7 @@ public class CourseBusiness {
     }
 
     public void delete(Integer id) {
-        Course entity = findByIdOrThrow(id);
-        courseRepository.delete(entity);
+        courseRepository.delete(findByIdOrThrow(id));
     }
 
     private Course findByIdOrThrow(Integer id) {
