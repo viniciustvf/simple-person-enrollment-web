@@ -1,6 +1,6 @@
-# Prova Prática – Case On-line (Processo Seletivo 02911/2025)
+# Avaliação Prática – Case On-line
 
-Projeto desenvolvido para a **Avaliação Prática (Estudo de Caso + Entrevista)** do processo seletivo **02911/2025 – Interno – Desenvolvedor Full Stack Pleno (Java + React)**, para o **Sistema FIESC** / **SENAI Soluções Digitais**.
+Projeto desenvolvido em 30 horas.
 
 O objetivo é entregar uma solução composta por **três aplicações** (Frontend, Backend WEB e API), integradas entre si, incluindo **cadastro de pessoa**, **consulta de CEP (ViaCEP)**, **inscrição em curso**, **finalização via fila (RabbitMQ)** e **consulta de selecionados**.
 
